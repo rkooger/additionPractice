@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Addition Practice</title>
+<style>
+	body {
+		height: 100%;
+		width: 100%;
+		text-align: center;
+		font-size: 30px;
+	}
+	input {
+		font-size: 30px;
+	}
+</style>
+</head>
+<body>
+<script>
+function getRandomInt(max) {
+	return Math.floor(Math.random() * max);
+};
+
+function setValues() {
+	let fstValue = getRandomInt(11),
+	    sndValue = getRandomInt(11);
+	fst.textContent = fstValue;
+	snd.textContent = sndValue;
+	answer = fstValue + sndValue;
+};
+
+// 1, 2, 5, 8 and 14 cm
+// if fail send to first group, if succeed send to next group
+
+let answer = 0;
+
+/*
+function setCurrentBucket() {
+	if (bucket1) 
+};
+*/
+const fst = document.createElement('span'),
+      snd = document.createElement('span'),
+      input = document.createElement('input'),
+      feedback = document.createElement('h6');
+
+window.onload = () => {
+	document.body.appendChild(fst);
+	document.body.appendChild(document.createTextNode('+'));
+	document.body.appendChild(snd);
+	document.body.appendChild(document.createTextNode('='));
+	document.body.appendChild(input);
+	document.body.appendChild(feedback);
+	setValues();
+	input.focus();
+
+	input.addEventListener('change', e => {
+		if (/^\d+$/.test(input.value)) {
+			if (answer === parseInt(input.value)) {
+				feedback.textContent = 'Good Job!';
+				setTimeout(() => {
+					input.value = '';
+					feedback.textContent = '';
+					setValues();
+				}, 600);
+			} else {
+				feedback.textContent = 'almost, try again';
+				setTimeout(() => {
+					input.value = '';
+					//feedback.textContent = '';
+					// setValues();
+				}, 600);
+			};
+		} else {
+			input.value = '';
+		};
+	});
+};
+</script>
+</body>
+</html>
