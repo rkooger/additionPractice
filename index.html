@@ -15,50 +15,112 @@
 		font-size: 30px;
 		width: 100px;
 	}
+	.numberLine__shaded {
+		background-color: lightgreen;
+	}
+	div > h6 {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+	}
+	td {
+		width: 48px;
+		height: 48px;
+		border: 1px solid lightgray;
+	}
 </style>
 </head>
 <body>
 <script>
+function myCreateSVG(jsh) {
+    const svgns = "http://www.w3.org/2000/svg",
+          svg = document.createElementNS(svgns, jsh[0]),
+          attributes = jsh[1],
+          children = jsh.slice(2);
+    if (attributes) {
+        Object.entries(attributes).forEach(([key, value]) => svg.setAttribute(key, value));
+    };
+    if (children) {
+        children.forEach((kid) => svg.appendChild(myCreateSVG(kid)));
+    };
+    return svg;
+};
+
+function myCreateElement(jsh) {
+    if ((typeof jsh) === 'string') {
+        return document.createTextNode(jsh);
+    } else if ((typeof jsh) === 'number') {
+        return document.createTextNode(jsh.toString());
+    } else if (jsh.tagName) {
+        return jsh;
+    } else if (jsh[0] === 'svg') {
+        return myCreateSVG(jsh);
+    } else {
+        const element = document.createElement(jsh[0]),
+              attributes = jsh[1],
+              children = jsh.slice(2);
+        if (attributes) {
+            Object.entries(attributes).forEach(([key, value]) => {
+                if (key === 'click') {
+                    element.addEventListener('click', value);
+                } else if (key === 'submit') {
+                    element.addEventListener('submit', value);
+                } else if (key === 'change') {
+                	element.addEventListener('change', value);
+                } else {
+                    element.setAttribute(key, value);
+                }});
+        };
+        if (children) {
+            children.forEach((kid) => element.appendChild(myCreateElement(kid)));
+        };
+        return element;
+    };
+};
+
 function getRandomInt(max) {
 	return Math.floor(Math.random() * max);
 };
 
 function setValues() {
-	let fstValue = getRandomInt(11),
-	    sndValue = getRandomInt(11);
+	fstValue = getRandomInt(11);
+	sndValue = getRandomInt(11);
 	fst.textContent = fstValue;
 	snd.textContent = sndValue;
 	answer = fstValue + sndValue;
 };
 
+function drawNumberLine() {
+	const line = myCreateElement(['tr', {}]),
+	      element = myCreateElement(['table', {}, line]);
+
+	for (let i = 1; i <= 20; i++) {
+		if (i <= fstValue) {
+			line.appendChild(myCreateElement(['td', {'class': 'numberLine__shaded'}, i.toString()]));
+		} else {
+			line.appendChild(myCreateElement(['td', {}, i.toString()]));
+		};
+	};
+	return element;
+};
+
 // 1, 2, 5, 8 and 14 cm
 // if fail send to first group, if succeed send to next group
 
-let answer = 0;
+let fstValue = 0,
+	sndValue = 0,
+	answer = 0,
+	guess = 0;
 
 /*
 function setCurrentBucket() {
 	if (bucket1) 
 };
 */
-const fst = document.createElement('span'),
-      snd = document.createElement('span'),
-      input = document.createElement('input'),
-      feedback = document.createElement('h6');
-
-window.onload = () => {
-	input.setAttribute('type', 'number');
-	document.body.appendChild(fst);
-	document.body.appendChild(document.createTextNode('+'));
-	document.body.appendChild(snd);
-	document.body.appendChild(document.createTextNode('='));
-	document.body.appendChild(input);
-	document.body.appendChild(feedback);
-	setValues();
-	input.focus();
-
-	input.addEventListener('change', e => {
-		if (/^\d+$/.test(input.value)) {
+const fst = myCreateElement(['span', {}]),
+      snd = myCreateElement(['span', {}]),
+      input = myCreateElement(['input', {'type': 'number', 'change': e => {
+      	if (/^\d+$/.test(input.value)) {
 			if (answer === parseInt(input.value)) {
 				feedback.textContent = 'Good Job!';
 				setTimeout(() => {
@@ -68,16 +130,25 @@ window.onload = () => {
 				}, 600);
 			} else {
 				feedback.textContent = 'almost, try again';
+
 				setTimeout(() => {
 					input.value = '';
 					//feedback.textContent = '';
 					// setValues();
+					feedback.appendChild(drawNumberLine());
 				}, 600);
 			};
 		} else {
-			input.value = '';
+		    input.value = '';
 		};
-	});
+      }}]),
+      feedback = myCreateElement(['h6', {}]),
+      container = myCreateElement(['div', {}, fst, '+', snd, '=', input, feedback]);
+
+window.onload = () => {
+	document.body.appendChild(container);
+	setValues();
+	input.focus();
 };
 </script>
 </body>
