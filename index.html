@@ -15,18 +15,25 @@
 		font-size: 30px;
 		width: 100px;
 	}
+	.numberLine {
+		display: flex;
+		flex-wrap: wrap;
+	}
 	.numberLine__shaded {
 		background-color: lightgreen;
 	}
-	div > h6 {
+	.feedback {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
 	}
-	td {
+	.numberLine__cell {
+		display: flex;
 		width: 48px;
 		height: 48px;
-		border: 1px solid lightgray;
+		border: 2px solid lightgray;
+		align-items: center;
+		justify-content: center;
 	}
 </style>
 </head>
@@ -91,14 +98,13 @@ function setValues() {
 };
 
 function drawNumberLine() {
-	const line = myCreateElement(['tr', {}]),
-	      element = myCreateElement(['table', {}, line]);
+	const element = myCreateElement(['div', {'class': 'numberLine'}]);
 
 	for (let i = 1; i <= 20; i++) {
 		if (i <= fstValue) {
-			line.appendChild(myCreateElement(['td', {'class': 'numberLine__shaded'}, i.toString()]));
+			element.appendChild(myCreateElement(['div', {'class': 'numberLine__shaded numberLine__cell'}, i.toString()]));
 		} else {
-			line.appendChild(myCreateElement(['td', {}, i.toString()]));
+			element.appendChild(myCreateElement(['div', {'class': 'numberLine__cell'}, i.toString()]));
 		};
 	};
 	return element;
@@ -142,7 +148,7 @@ const fst = myCreateElement(['span', {}]),
 		    input.value = '';
 		};
       }}]),
-      feedback = myCreateElement(['h6', {}]),
+      feedback = myCreateElement(['div', {'class': 'feedback'}]),
       container = myCreateElement(['div', {}, fst, '+', snd, '=', input, feedback]);
 
 window.onload = () => {
