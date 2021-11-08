@@ -105,7 +105,7 @@ function getRandomInt(max) {
 
 function setValues() {
 	fstValue = getRandomInt(11);
-	sndValue = getRandomInt(11);
+	sndValue = getRandomInt(11 - fstValue);
 	fst.textContent = fstValue;
 	snd.textContent = sndValue;
 	answer = fstValue + sndValue;
